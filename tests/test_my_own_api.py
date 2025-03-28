@@ -2,8 +2,10 @@ import pytest
 import requests
 import random
 from faker import Faker
+from db_tests import QueryUsers
 
 fake = Faker()
+db_query = QueryUsers()
 
 @pytest.fixture()
 def get_random_id():
@@ -22,9 +24,12 @@ def test_get_request():
         headers={'Content-type': 'application/json'}
     )
     users = response.json()
-
+    user_id = 1
+    email = 'test@test.test'
+    sql_query = db_query.filter_by_id(user_id).filter_by_email(email).constructor_query()
+    assert any(user["id"] == user_id and user["email"] == email for user in sql_query)
     assert response.status_code == 200
-    assert any(user["id"] == 1 and user["email"] == 'test@test.test' for user in users)
+    assert any(user["id"] == user_id and user["email"] == email for user in users)
 
 def test_post_request():
 

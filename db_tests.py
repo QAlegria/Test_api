@@ -1,4 +1,6 @@
 import psycopg2
+from psycopg2.extras import DictCursor
+
 import db_params
 
 db = psycopg2.connect(
@@ -9,28 +11,39 @@ db = psycopg2.connect(
     port = db_params.port
 )
 
-def db_query(param_1 = None, param_2 = None, param_3 = None):
-    cursor = db.cursor()
-    list_params = []
-    values = []
-    if param_1 is not None:
-        list_params.append("id = %s")
-        values.append(param_1)
-    if param_2 is not None:
-        list_params.append("name = %s")
-        values.append(param_2)
-    if param_3 is not None:
-        list_params.append("email = %s")
-        values.append(param_3)
+class QueryUsers:
+    def __init__(self):
+        self.list_params = []
+        self.values = []
 
-    if list_params:
-        part_of_query = "SELECT * FROM postgres.public.user WHERE " + " AND ".join(list_params)
-    else: part_of_query = "SELECT * FROM postgres.public.user"
-    cursor.execute(part_of_query,values)
-    print(cursor.fetchall())
-    db.close()
+    def filter_by_id(self, user_id):
+        if user_id is not None:
+            self.list_params.append("id = %s")
+            self.values.append(user_id)
+            return self
 
+    def filter_by_name(self, user_name):
+        if user_name is not None:
+            self.list_params.append("name = %s")
+            self.values.append(user_name)
+            return self
 
+    def filter_by_email(self, user_email):
+        if user_email is not None:
+            self.list_params.append("email = %s")
+            self.values.append(user_email)
+            return self
 
-db_query(9,None, None)
+    def constructor_query(self):
+        if self.list_params:
+            part_of_query = "SELECT * FROM postgres.public.user WHERE " + " AND ".join(self.list_params)
+        else: part_of_query = "SELECT * FROM postgres.public.user"
 
+        with db.cursor(cursor_factory=DictCursor) as cursor:
+            cursor.execute(part_of_query,self.values)
+            return cursor.fetchall()
+
+query = QueryUsers()
+result = (query.filter_by_name('1')
+          .filter_by_email('test@test.test')
+          .constructor_query())
