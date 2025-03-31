@@ -1,35 +1,18 @@
-import pytest
 import requests
-import random
 from faker import Faker
-from db_tests import QueryUsers
+
+from endpoints.test_query import GetQuery
+from tests.db_tests import QueryUsers
 
 fake = Faker()
 db_query = QueryUsers()
+get_request = GetQuery()
 
-@pytest.fixture()
-def get_random_id():
-    response = requests.get(
-        'http://192.168.1.4:5000/users',
-        headers={'Content-type': 'application/json'}
-    )
-    users = response.json()
-    ids = sorted(list(map(lambda user: user["id"], users)))
-    user_id = ids[random.randint(1,len(ids)-1)]
-    return user_id
 
-def test_get_request():
-    response = requests.get(
-        'http://192.168.1.4:5000/users',
-        headers={'Content-type': 'application/json'}
-    )
-    users = response.json()
-    user_id = 1
-    email = 'test@test.test'
-    sql_query = db_query.filter_by_id(user_id).filter_by_email(email).constructor_query()
-    assert any(user["id"] == user_id and user["email"] == email for user in sql_query)
-    assert response.status_code == 200
-    assert any(user["id"] == user_id and user["email"] == email for user in users)
+def test_get_request(check_the_first_stable_user, get_response):
+    get_request.get_query()
+    get_request.check_response(check_the_first_stable_user)
+    db_query.filter_dict(check_the_first_stable_user).constructor_query()
 
 def test_post_request():
 
