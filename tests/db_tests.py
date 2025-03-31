@@ -16,6 +16,17 @@ class QueryUsers:
         self.list_params = []
         self.values = []
 
+    def filter_dict(self, incoming_dict: dict):
+        filter_methods = {
+            "id": self.filter_by_id,
+            "name": self.filter_by_name,
+            "email": self.filter_by_email
+        }
+        for key, value in incoming_dict.items():
+            if key in filter_methods:
+                filter_methods[key](value)
+        return self
+
     def filter_by_id(self, user_id):
         if user_id is not None:
             self.list_params.append("id = %s")
