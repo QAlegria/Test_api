@@ -54,7 +54,9 @@ class QueryUsers:
             cursor.execute(part_of_query,self.values)
             return cursor.fetchall()
 
-query = QueryUsers()
-result = (query.filter_by_name('1')
-          .filter_by_email('test@test.test')
-          .constructor_query())
+    def reset_query(self):
+        self.list_params = []
+        self.values = []
+        return self
+
+

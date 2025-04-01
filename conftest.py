@@ -2,7 +2,7 @@ import pytest
 import random
 import requests
 
-from endpoints.test_query import GetQuery
+from endpoints.test_query import GetQuery, PostQuery
 
 
 @pytest.fixture()
@@ -26,3 +26,7 @@ def check_the_first_stable_user():
 @pytest.fixture()
 def get_response():
     return GetQuery()
+
+@pytest.fixture()
+def get_new_user():
+    return PostQuery()
