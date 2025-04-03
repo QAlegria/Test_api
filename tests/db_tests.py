@@ -13,10 +13,13 @@ db = psycopg2.connect(
 
 class QueryUsers:
     def __init__(self):
+        self.result = None
+        self.description = None
         self.list_params = []
         self.values = []
 
     def filter_dict(self, incoming_dict: dict):
+        print(f"This is incoming dict: {incoming_dict}")
         filter_methods = {
             "id": self.filter_by_id,
             "name": self.filter_by_name,
@@ -50,9 +53,12 @@ class QueryUsers:
             part_of_query = "SELECT * FROM postgres.public.user WHERE " + " AND ".join(self.list_params)
         else: part_of_query = "SELECT * FROM postgres.public.user"
 
-        with db.cursor(cursor_factory=DictCursor) as cursor:
+        with (db.cursor(cursor_factory=DictCursor) as cursor):
             cursor.execute(part_of_query,self.values)
-            return cursor.fetchall()
+            column_descript = [col.name for col in cursor.description]
+            rows = cursor.fetchall()
+            result = [dict(zip(column_descript, row)) for row in rows]
+            return result
 
     def reset_query(self):
         self.list_params = []
