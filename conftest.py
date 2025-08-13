@@ -3,13 +3,13 @@ import random
 import requests
 
 from endpoints.test_query import GetQuery, PostQuery, PutQuery, DeleteQuery
-from tests.db_tests import QueryUsers
+from database.db_functions import QueryUsers
 
 
 @pytest.fixture()
 def get_random_user():
     response = requests.get(
-        'http://192.168.1.4:5000/users',
+        'http://90.156.135.158:5000/users',
         headers={'Content-type': 'application/json'}
     )
     users = response.json()

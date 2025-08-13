@@ -1,9 +1,4 @@
-import requests
-from faker import Faker
-
 from conftest import db_query, get_response
-from endpoints.test_query import GetQuery, PostQuery
-from tests.db_tests import QueryUsers
 
 
 def test_get_request(check_the_first_stable_user, get_response, db_query):

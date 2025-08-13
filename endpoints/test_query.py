@@ -1,18 +1,15 @@
-from typing import Optional
-
-import pytest
-import random
 import requests
 from faker import Faker
 
-from tests.db_tests import QueryUsers
+from config import setting
+from database.db_functions import QueryUsers
 
 
 class GetQuery:
     def __init__(self):
         self.status = None
         self.users = None
-        self.url = "http://192.168.1.4:5000/users"
+        self.url = setting.API_URL
 
     def get_query(self):
         self.status = None
@@ -73,7 +70,7 @@ class PostQuery:
         self.status = None
         self.user_email = None
         self.user_name = None
-        self.url = "http://192.168.1.4:5000/users"
+        self.url = setting.API_URL
 
     def create_new_user(self, user_name: str = None, user_email: str = None):
         fake = Faker()
@@ -106,7 +103,7 @@ class PutQuery:
         self.status = None
         self.user_email = None
         self.user_name = None
-        self.url = "http://192.168.1.4:5000/users/"
+        self.url = setting.API_URL
 
     def change_the_user_params(self, user_dict: dict, user_name: str = None, user_email: str = None,
                                use_fake: bool = True):
@@ -125,11 +122,13 @@ class PutQuery:
             for key, value in [("name", self.user_name), ("email", self.user_email)]
             if value is not None
         }
+
         response = requests.put(
-            f'{self.url}{user_dict["id"]}',
+            f'{self.url}/{user_dict["id"]}',
             headers={'Content-type': 'application/json'},
             json=json_data
         )
+        print(f'This is response status code {response.status_code}')
         self.status = response.status_code
         self.changed_user = response.json()
         return response
@@ -154,12 +153,12 @@ class DeleteQuery:
         self.deleted_user = None
         self.user_dict = None
         self.message = "User deleted"
-        self.url = "http://192.168.1.4:5000/users/"
+        self.url = setting.API_URL
 
     def delete_user(self, user_dict: dict):
         user_id = user_dict["id"]
         response = requests.delete(
-            f'{self.url}{user_id}',
+            f'{self.url}/{user_id}',
             headers={'Content-type': 'application/json'})
         self.user_dict = user_dict
         self.status = response.status_code

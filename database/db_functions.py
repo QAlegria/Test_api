@@ -1,14 +1,14 @@
 import psycopg2
 from psycopg2.extras import DictCursor
 
-import db_params
+from config import setting
 
 db = psycopg2.connect(
-    dbname = db_params.dbname,
-    user = db_params.user,
-    password = db_params.password,
-    host = db_params.host,
-    port = db_params.port
+    dbname = setting.DB_NAME,
+    user = setting.DB_USER,
+    password = setting.DB_PASSWORD,
+    host = setting.DB_HOST,
+    port = setting.DB_PORT
 )
 
 class QueryUsers:
